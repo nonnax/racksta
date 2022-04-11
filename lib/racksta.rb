@@ -16,12 +16,12 @@ class Racksta
       @path_file = self.class.map[env["PATH_INFO"]]
       @status = @path_file.nil?? 404 : 200
     end
+    @path_file ||= :not_found_md
     [path_file, status] 
   end 
 
   def call(env)
     path_file, status = get_path_file(env)
-    raise if status==404
     body = View.render(path_file, visit_count: parse_cookies(env))
     
     [status, {Rack::CONTENT_TYPE=>'text/html; charset=utf-8'}, [body]]
