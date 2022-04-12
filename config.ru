@@ -2,10 +2,6 @@
 # frozen_string_literal: true
 require_relative 'lib/racksta'
 
-use Rack::Static,
-    urls: %w[/images /js /css],
-    root: 'public'
-
 Racksta['/'] = :index
 Racksta['/about', '/info']  = :about_md
 Racksta.map.merge!('/first' => :first, '/next'=> :next )
