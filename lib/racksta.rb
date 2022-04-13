@@ -34,8 +34,8 @@ module Racksta
         
         [status, {Rack::CONTENT_TYPE=>'text/html; charset=utf-8'}, [body]]
       }
-    rescue
-      [404, {}, ['Not Found']]    
+    rescue Exception => e
+      [404, {}, ["Not Found : " + e.message.rpartition('@').first]]    
     end
     def call(env) dup._call(env) end
     def parse_cookies(env) Rack::Utils.parse_cookies(env)["session_count"] end
