@@ -6,17 +6,17 @@ class View
   def self.render(page, **data) new(page, **data).render end 
   
   def initialize(page, **data)
-    p File.expand_path("views/#{page}.erb", Dir.pwd)
     @data = data
-    @layout, @template = 
-    [:layout, page].map{ |f| 
-      File.expand_path("views/#{f}.erb", Dir.pwd)
-      .then{|f| File.read(f) }
-      .then{|doc| f.match?(/_md$/) ? markdown(doc) : doc} 
-    }
+    @layout, @template = [:layout, page].map{ |f| File.expand_path("views/#{f}.erb", Dir.pwd)}
+    @file = File.expand_path("public/#{page.to_s.tr('_','.')}", Dir.pwd) if page.match?(/html$/)
   end
   
-  def render() [@template, @layout].inject(nil){ |prev, layout| _render(layout){ prev } } end
+  def render() 
+    return File.read(@file) if @file
+    [@template, @layout]
+    .map{|f| File.read(f).then{|doc| f.match?(/_md$/) ? markdown(doc) : doc} }
+    .inject(nil){ |prev, layout| _render(layout){ prev } } 
+  end
   
   def _render(f) ERB.new(f).result( binding ) end
   def markdown(f) Kramdown::Document.new(f).to_html end

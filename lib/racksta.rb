@@ -5,7 +5,7 @@ require_relative 'view'
 
 module Racksta
   @map={"/" => :index }
-  @stack = Rack::Builder.new do use Rack::Static, urls: %w[/img /media /js /css], root: 'public' end
+  @stack = Rack::Builder.new do use Rack::Static, urls: %w[/img /media /js /css /.], root: 'public' end
 
   class << self
     attr :stack, :map
@@ -41,5 +41,11 @@ module Racksta
     def parse_cookies(env) Rack::Utils.parse_cookies(env)["session_count"] end
     def halt(res) throw :halt, res end
 
+  end
+end
+
+module Kernel
+  def get(*u, &block)
+    u.each{|x| Racksta.map[x]=block.call }
   end
 end

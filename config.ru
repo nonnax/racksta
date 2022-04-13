@@ -2,7 +2,8 @@
 # frozen_string_literal: true
 require_relative 'lib/racksta'
 
-Racksta['/'] = :index
+get('/home', '/hq'){ :index_html }
+
 Racksta['/about', '/info']  = :about_md
 
 p Racksta.map
