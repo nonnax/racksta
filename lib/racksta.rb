@@ -16,7 +16,7 @@ module Racksta
   end
   
   class App 
-    attr :path_file, :status
+    attr :path_file, :status, :res, :req
 
     def get_path_file(env) 
       if env["REQUEST_METHOD"] == "GET"
@@ -28,9 +28,11 @@ module Racksta
     end 
 
     def _call(env)
+      @req=Rack::Request.new(env)
+      @res=Rack::Response.new
       catch(:halt){
         path_file, status = get_path_file(env)
-        body = View.render(path_file, visit_count: parse_cookies(env))
+        body = View.render(path_file, res:, req:)
         
         [status, {Rack::CONTENT_TYPE=>'text/html; charset=utf-8'}, [body]]
       }
@@ -38,7 +40,7 @@ module Racksta
       [404, {}, ["Not Found : " + e.message.rpartition('@').first]]    
     end
     def call(env) dup._call(env) end
-    def parse_cookies(env) Rack::Utils.parse_cookies(env)["session_count"] end
+    def parse_cookies(env) p Rack::Utils.parse_cookies(env)["session_count"] end
     def halt(res) throw :halt, res end
 
   end

@@ -3,6 +3,7 @@
 require 'kramdown'
 
 class View
+  attr :data
   def self.render(page, **data) new(page, **data).render end 
   
   def initialize(page, **data)
@@ -20,5 +21,4 @@ class View
   
   def _render(f) ERB.new(f).result( binding ) end
   def markdown(f) Kramdown::Document.new(f).to_html end
-  def visit_count() @data[:visit_count] end
 end
