@@ -4,7 +4,6 @@ require_relative 'lib/racksta'
 
 Racksta['/'] = :index
 Racksta['/about', '/info']  = :about_md
-Racksta.map.merge!('/first' => :first, '/next'=> :next )
 
 p Racksta.map
 run Racksta.new

@@ -5,21 +5,13 @@ require_relative 'view'
 
 module Racksta
   @map={"/" => :index }
+  @stack = Rack::Builder.new do use Rack::Static, urls: %w[/img /media /js /css], root: 'public' end
+
   class << self
-    attr :map, :stack
+    attr :stack, :map
     def []=(*u,s) u.each{|x| @map[x]=s} end  
     def new()
-      stack.run App.new
-    end
-    def stack()
-      @stack ||= Rack::Builder.new do
-        use Rack::Static,
-            urls: %w[/images /js /css],
-            root: 'public'
-      end
-    end
-    def use(m, **params)
-      stack.use(m, **params)
+      stack.tap{|s| s.run App.new }
     end
   end
   

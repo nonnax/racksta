@@ -6,10 +6,11 @@ class View
   def self.render(page, **data) new(page, **data).render end 
   
   def initialize(page, **data)
+    p File.expand_path("views/#{page}.erb", Dir.pwd)
     @data = data
     @layout, @template = 
     [:layout, page].map{ |f| 
-      File.expand_path("public/views/#{f}.erb", Dir.pwd)
+      File.expand_path("views/#{f}.erb", Dir.pwd)
       .then{|f| File.read(f) }
       .then{|doc| f.match?(/_md$/) ? markdown(doc) : doc} 
     }

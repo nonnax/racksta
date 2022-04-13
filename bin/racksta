@@ -1,0 +1,42 @@
+#!/usr/bin/env ruby
+# Id$ nonnax 2022-04-08 13:19:50 +0800
+require 'optparse'
+require 'fileutils'
+
+opts={}
+o=OptionParser.new do |o|
+  o.banner='Usage: racksta --create'
+  o.on('-cNAME','--create=NAME')
+end
+
+o.parse!(into: opts)
+
+def generate(local=opts[:create])  
+  puts "creating #{local}..."
+  c=File.expand_path('../config.ru', __dir__)  
+  f=File.expand_path('../lib/racksta.rb', __dir__)  
+  v=File.expand_path('../lib/view.rb', __dir__)  
+  css=File.expand_path('../public/css/style.css', __dir__)  
+  layout=File.expand_path('../views/layout.erb', __dir__)  
+  index=File.expand_path('../views/index.erb', __dir__)
+  nf=File.expand_path('../views/not_found_md.erb', __dir__)
+  
+  %w(
+    /public/css
+    /public/img
+    /public/media
+    /public/js
+    /views
+    /lib
+  ).each{ |path| FileUtils.mkdir_p File.join(local, path)}
+  
+  FileUtils.cp c, "#{local}"
+  FileUtils.cp css, "#{local}/public/css/"
+  FileUtils.cp [f,v], "#{local}/lib/"
+  FileUtils.cp [layout, index, nf], "#{local}/views/"
+end
+
+case 
+  when local=opts[:create]
+    generate(local)
+end
