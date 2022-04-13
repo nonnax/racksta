@@ -6,5 +6,5 @@ get('/home', '/hq'){ :index_html }
 
 Racksta['/about', '/info']  = :about_md
 
-p Racksta.map
+pp Racksta.map
 run Racksta.new
