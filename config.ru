@@ -2,7 +2,8 @@
 # frozen_string_literal: true
 require_relative 'lib/racksta'
 
-get('/home', '/hq'){ :index_html }
+get('/home', '/hq'){ '#index' }
+get('/ruby'){ 'ruby#index' }
 
 Racksta['/about', '/info']  = :about_md
 

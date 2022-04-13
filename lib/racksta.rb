@@ -10,9 +10,7 @@ module Racksta
   class << self
     attr :stack, :map
     def []=(*u,s) u.each{|x| @map[x]=s} end  
-    def new()
-      stack.tap{|s| s.run App.new }
-    end
+    def new() stack.tap{|s| s.run App.new } end
   end
   
   class App 
@@ -32,22 +30,18 @@ module Racksta
       @res=Rack::Response.new
       catch(:halt){
         path_file, status = get_path_file(env)
-        body = View.render(path_file, res:, req:)
+        body = View.render(path_file, **req.params.transform_keys(&:to_sym))
         
         [status, {Rack::CONTENT_TYPE=>'text/html; charset=utf-8'}, [body]]
       }
     rescue Exception => e
-      [404, {}, ["Not Found : " + e.message.rpartition('@').first]]    
+      [404, {}, ["Not Found : " + e.message.partition('@').first]]    
     end
     def call(env) dup._call(env) end
-    def parse_cookies(env) p Rack::Utils.parse_cookies(env)["session_count"] end
     def halt(res) throw :halt, res end
-
   end
 end
 
 module Kernel
-  def get(*u, &block)
-    u.each{|x| Racksta.map[x]=block.call }
-  end
+  def get(*u, &block) u.each{|x| Racksta.map[x]=block.call } end
 end

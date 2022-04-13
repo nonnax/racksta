@@ -8,15 +8,20 @@ class View
   
   def initialize(page, **data)
     @data = data
-    @layout, @template = [:layout, page].map{ |f| File.expand_path("views/#{f}.erb", Dir.pwd)}
-    @file = File.expand_path("public/#{page.to_s.tr('_','.')}", Dir.pwd) if page.match?(/html$/)
+    dir, html, page = page.to_s.partition('#')
+    if html=='#'
+      @file = File.expand_path("public#{'/'+dir}/#{page}.html", Dir.pwd) 
+    else
+      page = dir
+      @layout, @template = [:layout, page].map{ |f| File.expand_path("views/#{f}.erb", Dir.pwd)}
+    end
   end
   
   def render() 
     return File.read(@file) if @file
     [@template, @layout]
-    .map{|f| File.read(f).then{|doc| f.match?(/_md$/) ? markdown(doc) : doc} }
-    .inject(nil){ |prev, layout| _render(layout){ prev } } 
+    .map{|f| File.read(f).then{|doc| f.match?(/_md\./) ? markdown(doc) : doc} }
+    .inject(nil){ |prev, layout| _render(layout){ prev } }
   end
   
   def _render(f) ERB.new(f).result( binding ) end

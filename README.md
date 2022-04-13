@@ -19,13 +19,18 @@ basic router; erb views
                     public/js/
 
 ## define routes hash:
-    {'/path' => :name }
-    {'/path' => :name_md }
-    {'/path_a', '/path_x' => :name }
+    {'/path' => :name }  # name_erb
+    {'/path' => :name_md } # name_md.erb
+    {'/root_path' => '#html_name' } # name.html
+    {'/sub_path' => 'dir#html_name' } # dir/name.html
+    {'/path_a', '/path_x' => :name } # shared path, quasi-redirection
 
 ```ruby
+
     get('/path_1', '/path_n'){ :file_md }
-    get('/static'){ :index_html }
+    get('/html'){ '#index' }
+    get('/subfolder'){ 'ruby#index' }
+    
     Router.map['/about'] = :about
     Router['/', '/home'] = :index
     Router.map.merge!('/first' => :first, '/next'=> :next )
