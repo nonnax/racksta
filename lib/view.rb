@@ -3,27 +3,28 @@
 require 'kramdown'
 
 class View
-  attr :data
-  def self.render(page, **data) new(page, **data).render end 
-  
-  def initialize(page, **data)
-    @data = data
+  attr :params
+  def self.render(page, **params) new(page, **params).render end
+
+  def initialize(page, **params)
+    @params = params
     dir, html, page = page.to_s.partition('#')
     if html=='#'
-      @file = File.expand_path("public#{'/'+dir}/#{page}.html", Dir.pwd) 
+      pathname = File.join('public', dir, "#{page}.html")
+      @file = File.expand_path(pathname, Dir.pwd)
     else
       page = dir
       @layout, @template = [:layout, page].map{ |f| File.expand_path("views/#{f}.erb", Dir.pwd)}
     end
   end
-  
-  def render() 
+
+  def render()
     return File.read(@file) if @file
     [@template, @layout]
     .map{|f| File.read(f).then{|doc| f.match?(/_md\./) ? markdown(doc) : doc} }
     .inject(nil){ |prev, layout| _render(layout){ prev } }
   end
-  
+
   def _render(f) ERB.new(f).result( binding ) end
   def markdown(f) Kramdown::Document.new(f).to_html end
 end
